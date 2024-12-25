@@ -31,3 +31,4 @@ C:\Users\peter.maquiran\Documents\project\DoTAPI\obj\Debug\net8.0\refint\DoTAPI.
 C:\Users\peter.maquiran\Documents\project\DoTAPI\obj\Debug\net8.0\DoTAPI.pdb
 C:\Users\peter.maquiran\Documents\project\DoTAPI\obj\Debug\net8.0\DoTAPI.genruntimeconfig.cache
 C:\Users\peter.maquiran\Documents\project\DoTAPI\obj\Debug\net8.0\ref\DoTAPI.dll
+C:\Users\peter.maquiran\Documents\project\DoTAPI\bin\Debug\net8.0\Scalar.AspNetCore.dll

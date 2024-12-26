@@ -13,7 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(); // Add this line to enable controllers
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<ApplicationDbContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+  options.UseSqlServer(
+    builder.Configuration.GetConnectionString("Default"),
+    sqlOptions => sqlOptions.EnableRetryOnFailure()
+  )
+);
 builder.Services.AddScoped<IVideoGameRepository, VideoGameRepository>();
 
 builder.Services.AddOpenTelemetry()

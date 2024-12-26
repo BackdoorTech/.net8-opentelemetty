@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 using VideoGameApi;
+using OpenTelemetry;
+using OpenTelemetry.Resources;
+using CleanArchitecture.Infrastructure.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,16 +13,43 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(); // Add this line to enable controllers
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<VideoGameDbContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDbContext<ApplicationDbContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddScoped<IVideoGameRepository, VideoGameRepository>();
+
+builder.Services.AddOpenTelemetry()
+  .WithTracing(tracing =>
+    tracing
+      .SetResourceBuilder(ResourceBuilder.CreateDefault()
+        .AddService("MyApplicationService"))
+      .AddOtlpExporter() // Set your desired exporter
+      .AddAspNetCoreInstrumentation() // ASP.NET Core tracing
+      .AddSqlClientInstrumentation(options =>
+      {
+        options.SetDbStatementForText = true; // Capture SQL statements
+      })
+      .AddSource("MyApplicationSource") // For any custom sources you may have
+      .SetSampler(new AlwaysOnSampler()) // Or adjust sampling as per your needs
+);
+
+//builder.Services.AddSingleton(provider => TracerProvider.Default.GetTracer("CustomSpan"));
+// Add CORS policy
+builder.Services.AddCors();
 
 var app = builder.Build();
+
+app.UseCors(x => x
+  .AllowAnyMethod()
+  .AllowAnyHeader()
+  .SetIsOriginAllowed(origin => true) // allow any origin
+  //.WithOrigins("https://localhost:44351")); // Allow only this origin can also have multiple origins separated with comma
+  .AllowCredentials()); // allow credentials
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapScalarApiReference();
-    app.UseSwagger();
-    app.UseSwaggerUI();
+  app.MapScalarApiReference();
+  app.UseSwagger();
+  app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -32,27 +63,50 @@ app.MapControllers(); // This line connects controller routes
 // Retain your minimal API example
 var summaries = new[]
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+  "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+  var forecast =  Enumerable.Range(1, 5).Select(index =>
+    new WeatherForecast
+    (
+        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+        Random.Shared.Next(-20, 55),
+        summaries[Random.Shared.Next(summaries.Length)]
+    ))
+    .ToArray();
+  return forecast;
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+var tracerProvider = Sdk.CreateTracerProviderBuilder()
+    .AddSource("MyApplicationSource")
+    .SetResourceBuilder(ResourceBuilder.CreateDefault()
+        .AddService("MyApplicationService"))
+    .AddOtlpExporter() // Export tracing data to OTLP (can be adjusted)
+    .Build();
+
+var tracer = tracerProvider.GetTracer("MyApplicationSource");
+
+app.MapGet("/", () =>
+{
+  var span = tracer.StartSpan("CustomOperation");
+
+  // Add tags, events, or logic for the span
+  span.SetAttribute("custom.attribute", "example-value");
+  span.AddEvent("Custom event triggered");
+
+
+  span.End();
+
+  return "Hello from OpenTelemetry with manual span!";
+});
 
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+  public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }

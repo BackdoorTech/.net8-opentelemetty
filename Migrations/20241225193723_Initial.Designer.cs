@@ -10,7 +10,7 @@ using VideoGameApi;
 
 namespace DoTAPI.Migrations
 {
-    [DbContext(typeof(VideoGameDbContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20241225193723_Initial")]
     partial class Initial
     {

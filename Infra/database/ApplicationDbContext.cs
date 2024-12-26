@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VideoGameApi {
 
-  public class VideoGameDbContext(DbContextOptions<VideoGameDbContext> options): DbContext(options) {
+  public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): DbContext(options) {
     public DbSet<VideoGame> VideoGames => Set<VideoGame>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

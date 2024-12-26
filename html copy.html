@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tracing Frontend</title>
+  <script>
+    // Generate trace ID and span ID (simple example)
+    function generateTraceId() {
+      return crypto.randomUUID().replace(/-/g, '').slice(0, 32); // OpenTelemetry-style trace ID
+    }
+
+    function generateSpanId() {
+      return crypto.randomUUID().replace(/-/g, '').slice(0, 16); // OpenTelemetry-style span ID
+    }
+
+    // Send a request with tracing headers
+    async function sendRequest() {
+      const traceId = generateTraceId();
+      const spanId = generateSpanId();
+
+      // Set trace context headers
+      const headers = new Headers();
+      headers.append("traceparent", `00-${traceId}-${spanId}-01`);
+
+      try {
+        const response = await fetch("http://localhost:5255/api/Products", { headers }); // Replace with your backend URL
+        const data = await response.json();
+        document.getElementById("response").innerText = JSON.stringify(data, null, 2);
+      } catch (error) {
+        console.error("Error sending request:", error);
+        document.getElementById("response").innerText = "Error: Could not reach the server.";
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 10px 0;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 15px;
+      border: 1px solid #ddd;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tracing Frontend</h1>
+  <p>Click the button to send a traced request to the backend.</p>
+  <button onclick="sendRequest()">Send Request</button>
+  <h2>Response</h2>
+  <pre id="response">Click the button to see the response here...</pre>
+</body>
+</html>

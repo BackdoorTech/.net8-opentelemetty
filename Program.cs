@@ -5,6 +5,7 @@ using VideoGameApi;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using CleanArchitecture.Infrastructure.Interface;
+using OpenTelemetry.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +52,22 @@ builder.Services.AddOpenTelemetry()
               // options.Headers = "Authorization=Bearer q7aNwoXyMrFXzI8bW8";
             })
     );
+// Add OpenTelemetry metrics
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(options =>
+    {
+        // Add application and runtime metrics
+        options.SetResourceBuilder(ResourceBuilder.CreateDefault()
+                .AddService("BackEndDotnet"));
+        options.AddAspNetCoreInstrumentation(); // ASP.NET Core metrics
+        options.AddSqlClientInstrumentation();
 
+        // Optional: Add custom metrics
+        options.AddMeter("MyApp.Metrics");
+
+        // Configure the OTLP exporter to send data to the OpenTelemetry Collector
+        options.AddOtlpExporter();
+    });
 
 //builder.Services.AddSingleton(provider => TracerProvider.Default.GetTracer("CustomSpan"));
 // Add CORS policy

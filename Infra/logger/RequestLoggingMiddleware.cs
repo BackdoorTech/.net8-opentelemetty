@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 public class RequestLoggingMiddleware
 {
   private readonly RequestDelegate _next;
@@ -22,6 +24,9 @@ public class RequestLoggingMiddleware
     using var responseStream = new MemoryStream();
     httpContext.Response.Body = responseStream;
 
+    // Process the incoming request
+    await _next(httpContext);
+
     try
     {
       // Check the request body size
@@ -35,10 +40,6 @@ public class RequestLoggingMiddleware
 
         // Reset the request body so it can be used later by other middleware
         httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
-
-
-        // Process the incoming request
-        await _next(httpContext);
 
         // Log the response body after the request is processed
         responseStream.Seek(0, SeekOrigin.Begin);
@@ -54,6 +55,8 @@ public class RequestLoggingMiddleware
         // Only log if the status code is >= 400
         if (httpContext.Response.StatusCode >= 400)
         {
+          var activity = Activity.Current;
+          activity.SetStatus(ActivityStatusCode.Error, responseBody);
           using (var scope = _serviceScopeFactory.CreateScope())
           {
             var logger = scope.ServiceProvider.GetRequiredService<ErrorLoggingService>();

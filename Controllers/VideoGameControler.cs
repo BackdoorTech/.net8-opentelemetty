@@ -3,32 +3,26 @@ using CleanArchitecture.Infrastructure.Interface;
 using LanguageExt.UnsafeValueAccess;
 using Microsoft.AspNetCore.Mvc;
 using VideoGameApi;
-
-
-
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-
 
 
 public class VideoGameSchema
 {
-
   // [Required(ErrorMessage = "ID is required")]
   [Range(1, int.MaxValue, ErrorMessage = "ID must be a positive number")]
   public int Id { get; set;}
 
-  [Required(ErrorMessage = "Street is required")]
+  [Required()]
   [MaxLength(100, ErrorMessage = "Street cannot exceed 100 characters")]
   public string Title { get; set; }
 
-  [Required(ErrorMessage = "City is required")]
+  [Required()]
   public string Platform { get; set; }
 
-  [Required(ErrorMessage = "Country is required")]
+  [Required()]
   public string Developer { get; set; }
 
-  [Required(ErrorMessage = "Country is required")]
+  [Required()]
   public string Publisher { get; set; }
 }
 
@@ -79,7 +73,7 @@ public class VideoGameController(IVideoGameRepository repository) : ControllerBa
     var result = await _repository.GetAllAsync();
 
     return result.Match<ActionResult<List<VideoGame>>>(
-      Right: games => StatusCode(500, games),       // Success: return 200 OK with the list of games
+      Right: games => StatusCode(200, games),       // Success: return 200 OK with the list of games
       Left: error => StatusCode(500, error)
     );
   }

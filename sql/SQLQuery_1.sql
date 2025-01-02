@@ -5,6 +5,6 @@ SELECT TOP (1000) [Id]
       ,[ErrorMessage]
       ,[Timestamp]
       ,[statusCode]
-  FROM [DotnetDatabase].[dbo].[ErrorLog]
+FROM [DotnetDatabase].[dbo].[ErrorLog]
 
-  DELETE FROM [DotnetDatabase].[dbo].[ErrorLog];
+DELETE FROM [DotnetDatabase].[dbo].[ErrorLog];

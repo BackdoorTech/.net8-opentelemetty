@@ -10,3 +10,6 @@ public class ProductsController : ControllerBase
         return Ok(new[] { "Product1", "Product2", "Product3" });
     }
 }
+
+
+

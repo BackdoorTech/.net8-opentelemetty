@@ -4,6 +4,34 @@ using LanguageExt.UnsafeValueAccess;
 using Microsoft.AspNetCore.Mvc;
 using VideoGameApi;
 
+
+
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+
+
+public class VideoGameSchema
+{
+
+  // [Required(ErrorMessage = "ID is required")]
+  [Range(1, int.MaxValue, ErrorMessage = "ID must be a positive number")]
+  public int Id { get; set;}
+
+  // [Required(ErrorMessage = "Street is required")]
+  [MaxLength(100, ErrorMessage = "Street cannot exceed 100 characters")]
+  public string Title { get; set; }
+
+  //[Required(ErrorMessage = "City is required")]
+  public string Platform { get; set; }
+
+  //[Required(ErrorMessage = "Country is required")]
+  public string Developer { get; set; }
+
+  //[Required(ErrorMessage = "Country is required")]
+  public string Publisher { get; set; }
+}
+
 [ApiController]
 [Route("api/[controller]")]
 public class VideoGameController(IVideoGameRepository repository) : ControllerBase
@@ -21,6 +49,23 @@ public class VideoGameController(IVideoGameRepository repository) : ControllerBa
     }
   };
 
+
+  [HttpGet("annotation")]
+  public async Task<ActionResult> Anotation()
+  {
+    var activity = Activity.Current;
+
+    activity.AddEvent(new ActivityEvent("start complex execution"));
+    Thread.Sleep(500);
+    activity.AddEvent(new ActivityEvent("Stop complex execution"));
+
+    activity.SetTag("customTag", "123");
+
+    Thread.Sleep(500);
+
+    return StatusCode(200);
+  }
+
   [HttpGet]
   public async Task<ActionResult<List<VideoGame>>> GetProducts()
   {
@@ -34,7 +79,7 @@ public class VideoGameController(IVideoGameRepository repository) : ControllerBa
     var result = await _repository.GetAllAsync();
 
     return result.Match<ActionResult<List<VideoGame>>>(
-      Right: games => Ok(games),       // Success: return 200 OK with the list of games
+      Right: games => StatusCode(500, games),       // Success: return 200 OK with the list of games
       Left: error => StatusCode(500, error)
     );
   }
@@ -59,13 +104,16 @@ public class VideoGameController(IVideoGameRepository repository) : ControllerBa
 
 
   [HttpPost]
-  public async Task<ActionResult<VideoGame>> AddVideoGame(VideoGame newGame) {
-    if(newGame is null) {
-      return BadRequest();
-    }
+  [ServiceFilter(typeof(ValidateModelAttribute))]  // This uses the DI-injected attribute
+  public async Task<ActionResult<VideoGame>> AddVideoGame(VideoGameSchema product) {
 
-    //newGame.Id = videoGames.Max(g => g.Id) + 1;
-    //videoGames.Add(newGame);
+    var newGame = new VideoGame {
+      Developer = product.Developer,
+      Platform = product.Platform,
+      Publisher = product.Publisher,
+      Title = product.Title
+    };
+
     await _repository.AddAsync(newGame);
     var rowsAffected = await _repository.SaveChangesAsync();
 

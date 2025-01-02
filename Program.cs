@@ -13,6 +13,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(); // Add this line to enable controllers
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR().AddJsonProtocol(options =>
+  {
+    options.PayloadSerializerOptions.PropertyNameCaseInsensitive = true;
+  });
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
   options.UseSqlServer(
     builder.Configuration.GetConnectionString("Default"),
@@ -20,21 +24,31 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
   )
 );
 builder.Services.AddScoped<IVideoGameRepository, VideoGameRepository>();
+builder.Services.AddScoped<IErrorLoggingService, ErrorLoggingService>();
+builder.Services.AddScoped<ValidateModelAttribute>();
 
+// Set up OpenTelemetry
 builder.Services.AddOpenTelemetry()
-  .WithTracing(tracing =>
-    tracing
-      .SetResourceBuilder(ResourceBuilder.CreateDefault()
-        .AddService("MyApplicationService"))
-      .AddOtlpExporter() // Set your desired exporter
-      .AddAspNetCoreInstrumentation() // ASP.NET Core tracing
-      .AddSqlClientInstrumentation(options =>
-      {
-        options.SetDbStatementForText = true; // Capture SQL statements
-      })
-      .AddSource("MyApplicationSource") // For any custom sources you may have
-      .SetSampler(new AlwaysOnSampler()) // Or adjust sampling as per your needs
-);
+    .WithTracing(tracing =>
+        tracing
+            .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                .AddService("BackEndDotnet"))
+            .AddAspNetCoreInstrumentation() // Trace ASP.NET requests
+            //.AddHttpClientInstrumentation() // Trace HTTP client calls
+            .AddSqlClientInstrumentation(options =>
+            {
+              options.SetDbStatementForText = true; // Capture full SQL statements
+            })
+            .AddSource("MyApplicationSource") // Your custom sources
+            .SetSampler(new AlwaysOnSampler()) // Sampler - always capture for testing
+            .AddOtlpExporter(options =>
+            {
+              //options.Endpoint = new Uri("https://a0138f1d3cfe46c6b660a300bc5100d8.apm.us-central1.gcp.cloud.es.io:443");
+              options.Endpoint = new Uri("http://localhost:4318/v1/traces");
+              // options.Headers = "Authorization=Bearer q7aNwoXyMrFXzI8bW8";
+            })
+    );
+
 
 //builder.Services.AddSingleton(provider => TracerProvider.Default.GetTracer("CustomSpan"));
 // Add CORS policy
@@ -108,6 +122,39 @@ app.MapGet("/", () =>
 
   return "Hello from OpenTelemetry with manual span!";
 });
+
+
+// app.UseEndpoints(endpoints =>
+// {
+//   var unused = endpoints.MapHub<ChatHub>("/chat");
+// });
+
+app.MapHub<ChatHub>("/chathub");
+// Register SignalR
+//app.MapHub<ChatHub>("/chat");
+
+// app.MapHealthChecks("/health", new HealthCheckOptions {
+//   ResponseWriter = WriteJsonResponse
+// });
+
+
+// static Task WriteJsonResponse(HttpContext context, HealthReport result)
+// {
+//     context.Response.ContentType = "application/json";
+//     var json = JsonSerializer.Serialize(new
+//     {
+//         status = result.Status.ToString(),
+//         results = result.Entries.Select(entry => new
+//         {
+//             key = entry.Key,
+//             status = entry.Value.Status.ToString(),
+//             description = entry.Value.Description,
+//             data = entry.Value.Data
+//         })
+//     });
+
+//     return context.Response.WriteAsync(json);
+// }
 
 app.Run();
 

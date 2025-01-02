@@ -6,61 +6,31 @@
   <title>Tracing Frontend</title>
 
   <!-- OpenTelemetry JS SDK -->
-  <script src="
-  https://cdn.jsdelivr.net/npm/@opentelemetry/api@1.9.0/build/src/index.min.js
-  "></script>
-  <script src="
-  https://cdn.jsdelivr.net/npm/@opentelemetry/sdk-trace-web@1.30.0/build/src/index.min.js
-  "></script>
-  <script src="
-  https://cdn.jsdelivr.net/npm/@opentelemetry/propagator-b3@1.30.0/build/src/index.min.js
-  "></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js" integrity="sha512-7SRCYIJtR6F8ocwW7UxW6wGKqbSyqREDbfCORCbGLatU0iugBLwyOXpzhkPyHIFdBO0K2VCu57fvP2Twgx1o2A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
-    // Set up OpenTelemetry Web Tracing
-    const { WebTracerProvider } = window.OpenTelemetry.sdk.trace;
-    const { SimpleSpanProcessor } = window.OpenTelemetry.sdk.trace;
-    const { ConsoleSpanExporter } = window.OpenTelemetry.sdk.trace;
-    const { B3Propagator } = window.OpenTelemetry.propagation.b3;
-    const { trace } = window.OpenTelemetry.api;
+    var connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:5255/chat", { transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling }).build();
 
-    // Initialize a Tracer provider
-    const provider = new WebTracerProvider({
-      plugins: [],
+    connection.start().catch(function(err) {
+      return console.error(err.toString());
     });
 
-    // Simple console exporter for tracing data (you can export to Jaeger/Zipkin for real use)
-    provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
+    var user = "123"
+    var message = "123"
 
-    // Register the B3 propagator (you can replace this with other propagators like W3C if needed)
-    provider.register({ propagator: new B3Propagator() });
-
-    const tracer = provider.getTracer("frontend-tracer");
-
-    // Send a request with tracing headers
-    async function sendRequest() {
-      const span = tracer.startSpan("frontend-request");
-
-      // Attach tracing headers
-      const traceparent = `00-${span.context().traceId}-${span.context().spanId}-01`; // Trace context
-
-      const headers = new Headers();
-      headers.append("traceparent", traceparent);
-
-      try {
-        const response = await fetch("http://localhost:5255/api/Products", { headers }); // Replace with your backend URL
-        const data = await response.json();
-
-        // Display the response data
-        document.getElementById("response").innerText = JSON.stringify(data, null, 2);
-      } catch (error) {
-        console.error("Error sending request:", error);
-        document.getElementById("response").innerText = "Error: Could not reach the server.";
-      } finally {
-        // End the span when request is complete
-        span.end();
-      }
+    function sendRequest() {
+      connection.invoke("SendMessage", user, message).catch(function(err) {
+        return console.error(err.toString())
+      });
     }
+
+    connection.on("ReceiveMessage", data => {
+      console.log(data);
+    });
+
+    connection.onclose((error) => {
+      console.error("Connection closed with an error:", error);
+  });
+
   </script>
 
   <style>

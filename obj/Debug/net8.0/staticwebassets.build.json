@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "8lO5+Vc+qPPEjHjlBynmm7PUlU8XR05y1hCyw3uL6Ao=",
+  "Hash": "mzgBBPdONaYT48XcJEi/1+/6HIlMjbNvtgMCPCpznv4=",
   "Source": "DoTAPI",
   "BasePath": "_content/DoTAPI",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }

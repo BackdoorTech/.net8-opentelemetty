@@ -1,29 +1,30 @@
-using System.Threading.Tasks;
 using VideoGameApi;
 
 public class ErrorLoggingService : IErrorLoggingService
 {
-    private readonly ApplicationDbContext _context;
+  private readonly ApplicationDbContext _context;
 
-    public ErrorLoggingService(ApplicationDbContext context)
+  public ErrorLoggingService(ApplicationDbContext context)
+  {
+    _context = context;
+  }
+
+  public async Task LogValidationError(string method, string endpoint, string statusCode, string payload, string errorMessages)
+  {
+    //Console.WriteLine(payload);
+    var logEntry = new ErrorLog
     {
-      _context = context;
-    }
+      Method = method,
+      Endpoint = endpoint,
+      Payload = payload,  // Or use JsonConvert.SerializeObject(payload) if needed
+      ErrorMessage = errorMessages,
+      Timestamp = DateTime.UtcNow,
+      statusCode = statusCode
+    };
 
-    public async Task LogValidationError(string method, string endpoint, object payload, string errorMessages)
-    {
-        var logEntry = new ErrorLog
-        {
-            Method = method,
-            Endpoint = endpoint,
-            Payload = payload.ToString(),  // Or use JsonConvert.SerializeObject(payload) if needed
-            ErrorMessage = errorMessages,
-            Timestamp = DateTime.UtcNow
-        };
+    //Console.WriteLine("send");
 
-        Console.WriteLine("send");
-
-        _context.ErrorLog.Add(logEntry);
-        await _context.SaveChangesAsync();
-    }
+    _context.ErrorLog.Add(logEntry);
+    await _context.SaveChangesAsync();
+  }
 }

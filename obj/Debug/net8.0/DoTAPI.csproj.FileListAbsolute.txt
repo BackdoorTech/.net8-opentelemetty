@@ -193,3 +193,4 @@ C:\Users\peter.maquiran\Documents\project\DoTAPI\bin\Debug\net8.0\Microsoft.Exte
 C:\Users\peter.maquiran\Documents\project\DoTAPI\bin\Debug\net8.0\DoTAPI.staticwebassets.endpoints.json
 C:\Users\peter.maquiran\Documents\project\DoTAPI\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\peter.maquiran\Documents\project\DoTAPI\obj\Debug\net8.0\staticwebassets\msbuild.DoTAPI.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+C:\Users\peter.maquiran\Documents\project\DoTAPI\bin\Debug\net8.0\Newtonsoft.Json.dll

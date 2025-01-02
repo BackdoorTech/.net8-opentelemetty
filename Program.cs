@@ -21,11 +21,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
   options.UseSqlServer(
     builder.Configuration.GetConnectionString("Default"),
     sqlOptions => sqlOptions.EnableRetryOnFailure()
+
   )
 );
 builder.Services.AddScoped<IVideoGameRepository, VideoGameRepository>();
-builder.Services.AddScoped<IErrorLoggingService, ErrorLoggingService>();
-builder.Services.AddScoped<ValidateModelAttribute>();
+builder.Services.AddScoped<ErrorLoggingService>();
+// Register the custom middleware in the pipeline
+
+// builder.Services.AddScoped<ValidateModelAttribute>();
 
 // Set up OpenTelemetry
 builder.Services.AddOpenTelemetry()
@@ -44,7 +47,7 @@ builder.Services.AddOpenTelemetry()
             .AddOtlpExporter(options =>
             {
               //options.Endpoint = new Uri("https://a0138f1d3cfe46c6b660a300bc5100d8.apm.us-central1.gcp.cloud.es.io:443");
-              options.Endpoint = new Uri("http://localhost:4318/v1/traces");
+              //options.Endpoint = new Uri("http://localhost:4318/v1/traces");
               // options.Headers = "Authorization=Bearer q7aNwoXyMrFXzI8bW8";
             })
     );
@@ -55,7 +58,7 @@ builder.Services.AddOpenTelemetry()
 builder.Services.AddCors();
 
 var app = builder.Build();
-
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseCors(x => x
   .AllowAnyMethod()
   .AllowAnyHeader()

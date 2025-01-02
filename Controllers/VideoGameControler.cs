@@ -18,17 +18,17 @@ public class VideoGameSchema
   [Range(1, int.MaxValue, ErrorMessage = "ID must be a positive number")]
   public int Id { get; set;}
 
-  // [Required(ErrorMessage = "Street is required")]
+  [Required(ErrorMessage = "Street is required")]
   [MaxLength(100, ErrorMessage = "Street cannot exceed 100 characters")]
   public string Title { get; set; }
 
-  //[Required(ErrorMessage = "City is required")]
+  [Required(ErrorMessage = "City is required")]
   public string Platform { get; set; }
 
-  //[Required(ErrorMessage = "Country is required")]
+  [Required(ErrorMessage = "Country is required")]
   public string Developer { get; set; }
 
-  //[Required(ErrorMessage = "Country is required")]
+  [Required(ErrorMessage = "Country is required")]
   public string Publisher { get; set; }
 }
 
@@ -104,7 +104,7 @@ public class VideoGameController(IVideoGameRepository repository) : ControllerBa
 
 
   [HttpPost]
-  [ServiceFilter(typeof(ValidateModelAttribute))]  // This uses the DI-injected attribute
+  //[ValidateModel]
   public async Task<ActionResult<VideoGame>> AddVideoGame(VideoGameSchema product) {
 
     var newGame = new VideoGame {

@@ -6,4 +6,6 @@ public class ErrorLog
   public required string Payload { get; set; }
   public required string ErrorMessage { get; set; }
   public DateTime Timestamp { get; set; }
+
+  public required string statusCode  { get; set; }
 }

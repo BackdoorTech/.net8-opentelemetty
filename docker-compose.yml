@@ -1,0 +1,83 @@
+version: '3'
+
+services:
+
+  # redis:
+  #   container_name: idoc-redis
+  #   image: 'redis:alpine'
+  #   volumes:
+  #     - idoc-redis:/data
+  #   ports:
+  #     - 6379:6379
+  zipkin-all-in-one:
+    container_name: idoc-zipkin-all-in-one
+    image: openzipkin/zipkin:latest
+    ports:
+      - "9411:9411"
+    env_file:
+      - .env
+  prometheus:
+    container_name: idoc-prometheus
+    image: prom/prometheus:v2.47.0
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--enable-feature=otlp-write-receiver'
+      - '--enable-feature=exemplar-storage'
+    env_file:
+      - .env
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./docker/prometheus/config.yml:/etc/prometheus/prometheus.yml
+      - ./docker/prometheus/alert.rules:/etc/prometheus/alert.rules
+  collector:
+    container_name: idoc-collector
+    image: otel/opentelemetry-collector-contrib:0.53.0
+    command: [ "--config=/conf/collector-config.yaml" ]
+    volumes:
+      - ./docker/collector/collector-config.yaml:/conf/collector-config.yaml
+    ports:
+      - "9464:9464"
+      - "4317:4317"
+      - "4318:4318"
+    depends_on:
+      - zipkin-all-in-one
+
+  loki:
+    image: grafana/loki:2.8.0
+    container_name: loki
+    ports:
+      - "3100:3100" # Loki web UI and API
+    volumes:
+      - ./loki-config.yaml:/etc/loki/loki-config.yaml
+
+
+  # Optional: If you want a frontend to view the logs like Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000" # Grafana UI to view logs from Loki
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - loki
+    links:
+      - loki
+
+
+volumes:
+  idoc-postgres:
+  idoc-redis:
+  mongo-data:
+  mongo-primary-data:
+  mongo-secondary-data:
+  mongo-tertiary-data:
+networks:
+  mongo-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+  postgres-network:
+    driver: bridge

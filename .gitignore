@@ -82,9 +82,7 @@ tmp/
 *.mdf
 *.ldf
 
-# Docker
-**/Dockerfile
-**/docker-compose*
+
 
 # OS-specific files
 Thumbs.db

@@ -3,6 +3,7 @@ using CleanArchitecture.Infrastructure.Interface;
 using LanguageExt.UnsafeValueAccess;
 using Microsoft.AspNetCore.Mvc;
 using VideoGameApi;
+
 using System.ComponentModel.DataAnnotations;
 
 
@@ -59,6 +60,16 @@ public class VideoGameController(IVideoGameRepository repository) : ControllerBa
 
     return StatusCode(200);
   }
+
+
+  [HttpGet("throwr")]
+  public async Task<ActionResult> throwr()
+  {
+    throw new Exception("hello");
+
+    return StatusCode(200);
+  }
+
 
   [HttpGet]
   public async Task<ActionResult<List<VideoGame>>> GetProducts()

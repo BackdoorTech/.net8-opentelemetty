@@ -24,11 +24,13 @@ public class RequestLoggingMiddleware
     using var responseStream = new MemoryStream();
     httpContext.Response.Body = responseStream;
 
-    // Process the incoming request
-    await _next(httpContext);
+
 
     try
     {
+      // Process the incoming request
+      await _next(httpContext);
+
       // Check the request body size
       if (httpContext.Request.ContentLength.HasValue && httpContext.Request.ContentLength.Value <= MaxRequestBodySize)
       {
@@ -67,8 +69,20 @@ public class RequestLoggingMiddleware
     }
     catch (Exception ex)
     {
+      // Optionally, you can log additional info like method, status code, etc.
+      string method = httpContext.Request.Method;
+      string endpoint = httpContext.Request.Path;
+      string statusCode = httpContext.Response.StatusCode.ToString();
+
+      using (var scope = _serviceScopeFactory.CreateScope())
+      {
+        var logger = scope.ServiceProvider.GetRequiredService<ErrorLoggingService>();
+        string requestBody = await new StreamReader(httpContext.Request.Body).ReadToEndAsync();
+
+        await logger.LogValidationError(method, endpoint, "500", requestBody, ex.ToString());
+      }
       // You can log any exception that occurs during the processing of the request
-      Console.WriteLine($"Exception: {ex.Message}");
+      // Console.WriteLine($"Exception1: {ex}..");
       throw;
     }
     finally

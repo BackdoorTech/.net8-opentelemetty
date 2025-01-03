@@ -7,7 +7,7 @@ public class ValidateModelAttribute : ActionFilterAttribute
 
   public override void OnActionExecuting(ActionExecutingContext context)
   {
-    Console.WriteLine("nuice");
+    // Console.WriteLine("nuice");
     if (!context.ModelState.IsValid)
     {
       // Extract validation errors

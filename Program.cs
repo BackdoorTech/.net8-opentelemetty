@@ -7,6 +7,11 @@ using OpenTelemetry.Resources;
 using CleanArchitecture.Infrastructure.Interface;
 using OpenTelemetry.Metrics;
 
+
+
+using Serilog;
+using Serilog.Formatting.Compact;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -68,6 +73,23 @@ builder.Services.AddOpenTelemetry()
         // Configure the OTLP exporter to send data to the OpenTelemetry Collector
         options.AddOtlpExporter();
     });
+
+
+
+// Set up Serilog as the logging framework
+builder.Host.UseSerilog((context, loggerConfig) =>
+{
+
+  //loggerConfig.MinimumLevel.Warning();
+  loggerConfig.WriteTo.Console(new RenderedCompactJsonFormatter())
+  .WriteTo.OpenTelemetry(options =>
+  {
+    //options.Endpoint = "http://<collector-endpoint>:55681/v1/logs";
+    //options.Endpoint = new Uri("http://<collector-endpoint>:55681/v1/logs");  // Replace with your OpenTelemetry Collector endpoint
+  });
+});
+
+
 
 //builder.Services.AddSingleton(provider => TracerProvider.Default.GetTracer("CustomSpan"));
 // Add CORS policy

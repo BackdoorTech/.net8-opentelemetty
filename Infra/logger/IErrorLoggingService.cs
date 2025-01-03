@@ -1,4 +1,4 @@
-public interface IErrorLoggingService
+public interface IDBLoggingService
 {
-  Task LogValidationError(string method, string endpoint, string statusCode, string payload, string errorMessages);
+  Task LogError(string method, string endpoint, string statusCode, string payload, string errorMessages);
 }

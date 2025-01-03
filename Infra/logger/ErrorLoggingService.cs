@@ -1,16 +1,16 @@
 using VideoGameApi;
 using System.Diagnostics;
 
-public class ErrorLoggingService : IErrorLoggingService
+public class DBLoggingService : IDBLoggingService
 {
   private readonly ApplicationDbContext _context;
 
-  public ErrorLoggingService(ApplicationDbContext context)
+  public DBLoggingService(ApplicationDbContext context)
   {
     _context = context;
   }
 
-  public async Task LogValidationError(string method, string endpoint, string statusCode, string payload, string errorMessages)
+  public async Task LogError(string method, string endpoint, string statusCode, string payload, string errorMessages)
   {
     //Console.WriteLine(payload);
     var traceId = Activity.Current?.TraceId.ToString();

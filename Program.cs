@@ -6,11 +6,7 @@ using OpenTelemetry;
 using OpenTelemetry.Resources;
 using CleanArchitecture.Infrastructure.Interface;
 using OpenTelemetry.Metrics;
-
-
-
 using Serilog;
-using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +30,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 );
 builder.Services.AddScoped<IVideoGameRepository, VideoGameRepository>();
-builder.Services.AddScoped<ErrorLoggingService>();
+builder.Services.AddScoped<DBLoggingService>();
+builder.Services.AddScoped<IActivityManagerR, ActivityManagerR>();
 // Register the custom middleware in the pipeline
 
 // builder.Services.AddScoped<ValidateModelAttribute>();
@@ -129,20 +126,6 @@ var summaries = new[]
   "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", () =>
-{
-  var forecast =  Enumerable.Range(1, 5).Select(index =>
-    new WeatherForecast
-    (
-        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-        Random.Shared.Next(-20, 55),
-        summaries[Random.Shared.Next(summaries.Length)]
-    ))
-    .ToArray();
-  return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
 
 var tracerProvider = Sdk.CreateTracerProviderBuilder()
     .AddSource("MyApplicationSource")
@@ -152,21 +135,6 @@ var tracerProvider = Sdk.CreateTracerProviderBuilder()
     .Build();
 
 var tracer = tracerProvider.GetTracer("MyApplicationSource");
-
-app.MapGet("/", () =>
-{
-  var span = tracer.StartSpan("CustomOperation");
-
-  // Add tags, events, or logic for the span
-  span.SetAttribute("custom.attribute", "example-value");
-  span.AddEvent("Custom event triggered");
-
-
-  span.End();
-
-  return "Hello from OpenTelemetry with manual span!";
-});
-
 
 // app.UseEndpoints(endpoints =>
 // {
@@ -202,7 +170,23 @@ app.MapHub<ChatHub>("/chathub");
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+// Handle unhandled exceptions globally ===================================================
+AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
 {
-  public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+  Log.Error((Exception)e.ExceptionObject, "Unhandled global exception caught in AppDomain");
+};
+
+// Handle unobserved task exceptions globally (e.g., async/Task exceptions)
+TaskScheduler.UnobservedTaskException += (sender, e) =>
+{
+  Log.Error(e.Exception, "Unhandled global exception caught in TaskScheduler");
+  e.SetObserved(); // Prevents the process from terminating
+};
+
+
+// 5s
+void main() {
+
+
+  throw new ("dfsdf");
 }

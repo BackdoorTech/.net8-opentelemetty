@@ -96,7 +96,7 @@ public class GenericRepository<T>(ApplicationDbContext context) : IGenericReposi
     Func<IQueryable<T>, IQueryable<T>>? include = null,
     Expression<Func<T, object>>? orderBy = null,
     bool ascending = true,
-    Expression<Func<T, TResult>> selector = null)
+    Expression<Func<T, TResult>>? selector = null)
   {
     IQueryable<T> query = _dbSet.AsNoTracking();
 

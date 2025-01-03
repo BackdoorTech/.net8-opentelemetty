@@ -1,4 +1,5 @@
 using VideoGameApi;
+using System.Diagnostics;
 
 public class ErrorLoggingService : IErrorLoggingService
 {
@@ -12,6 +13,7 @@ public class ErrorLoggingService : IErrorLoggingService
   public async Task LogValidationError(string method, string endpoint, string statusCode, string payload, string errorMessages)
   {
     //Console.WriteLine(payload);
+    var traceId = Activity.Current?.TraceId.ToString();
     var logEntry = new ErrorLog
     {
       Method = method,
@@ -19,7 +21,8 @@ public class ErrorLoggingService : IErrorLoggingService
       Payload = payload,  // Or use JsonConvert.SerializeObject(payload) if needed
       ErrorMessage = errorMessages,
       Timestamp = DateTime.UtcNow,
-      statusCode = statusCode
+      statusCode = statusCode,
+      TraceId = traceId
     };
 
     //Console.WriteLine("send");

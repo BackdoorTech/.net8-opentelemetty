@@ -12,7 +12,7 @@ using VideoGameApi;
 namespace DoTAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250102203056_Initial")]
+    [Migration("20250103104426_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -51,6 +51,10 @@ namespace DoTAPI.Migrations
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("TraceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("statusCode")
                         .IsRequired()

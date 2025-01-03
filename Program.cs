@@ -24,11 +24,14 @@ builder.Services.AddSignalR().AddJsonProtocol(options =>
     options.PayloadSerializerOptions.PropertyNameCaseInsensitive = true;
   });
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  options.UseSqlServer(
-    builder.Configuration.GetConnectionString("Default"),
-    sqlOptions => sqlOptions.EnableRetryOnFailure()
+     options.UseSqlServer(
+            builder.Configuration.GetConnectionString("Default"),
+            sqlOptions => sqlOptions.EnableRetryOnFailure())
+        .EnableSensitiveDataLogging(false) // Optional: disable sensitive data logging
+        .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddFilter((category, level) =>
+            !category.StartsWith("Microsoft.EntityFrameworkCore.Database.Command") // Turn off DbCommand logs
+        )))
 
-  )
 );
 builder.Services.AddScoped<IVideoGameRepository, VideoGameRepository>();
 builder.Services.AddScoped<ErrorLoggingService>();
@@ -56,7 +59,7 @@ builder.Services.AddOpenTelemetry()
               //options.Endpoint = new Uri("http://localhost:4318/v1/traces");
               // options.Headers = "Authorization=Bearer q7aNwoXyMrFXzI8bW8";
             })
-    );
+);
 // Add OpenTelemetry metrics
 builder.Services.AddOpenTelemetry()
     .WithMetrics(options =>
@@ -81,7 +84,7 @@ builder.Host.UseSerilog((context, loggerConfig) =>
 {
 
   //loggerConfig.MinimumLevel.Warning();
-  loggerConfig.WriteTo.Console(new RenderedCompactJsonFormatter())
+  loggerConfig.WriteTo.Console()
   .WriteTo.OpenTelemetry(options =>
   {
     //options.Endpoint = "http://<collector-endpoint>:55681/v1/logs";

@@ -1,10 +1,4 @@
-SELECT TOP (1000) [Id]
-      ,[Method]
-      ,[Endpoint]
-      ,[Payload]
-      ,[ErrorMessage]
-      ,[Timestamp]
-      ,[statusCode]
+SELECT TOP (1000) *
 FROM [DotnetDatabase].[dbo].[ErrorLog]
 
 DELETE FROM [DotnetDatabase].[dbo].[ErrorLog];
@@ -12,4 +6,4 @@ DELETE FROM [DotnetDatabase].[dbo].[ErrorLog];
 
 SELECT *
 FROM [DotnetDatabase].[dbo].[ErrorLog]
-WHERE ErrorMessage LIKE '%893b45080af7fec4%';
+WHERE TraceId LIKE '%69d0f69d3e3720a9c19a40fd867eca71%';

@@ -17,4 +17,4 @@ ALTER TABLE [dbo].[VideoGames] ADD  CONSTRAINT [PK_VideoGames] PRIMARY KEY CLUST
 GO
 
 
-DROP TABLE [dbo].[VideoGames];
+DROP TABLE [DotnetDatabase].[dbo].[VideoGames];

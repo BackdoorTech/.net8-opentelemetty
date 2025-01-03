@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Serilog;
 
 public class RequestLoggingMiddleware
 {
@@ -69,21 +70,41 @@ public class RequestLoggingMiddleware
     }
     catch (Exception ex)
     {
-      // Optionally, you can log additional info like method, status code, etc.
+      // Log the error information
       string method = httpContext.Request.Method;
       string endpoint = httpContext.Request.Path;
-      string statusCode = httpContext.Response.StatusCode.ToString();
+      string requestBody = string.Empty;
 
+      if (httpContext.Request.ContentLength.HasValue && httpContext.Request.ContentLength.Value <= MaxRequestBodySize)
+      {
+        httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+        requestBody = await new StreamReader(httpContext.Request.Body).ReadToEndAsync();
+        httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+      }
+
+      // Ensure TraceId is set in case of an exception
+      var traceId = Activity.Current?.TraceId.ToString();
+      if (!string.IsNullOrEmpty(traceId))
+      {
+        Console.WriteLine("TraceId: " + traceId);
+        httpContext.Response.Headers.Add("X-TraceId", traceId);
+      }
+      // Set response status code to 400 (Bad Request) or appropriate value
+      httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+      // Log the exception using a scoped logger
       using (var scope = _serviceScopeFactory.CreateScope())
       {
         var logger = scope.ServiceProvider.GetRequiredService<ErrorLoggingService>();
-        string requestBody = await new StreamReader(httpContext.Request.Body).ReadToEndAsync();
-
-        await logger.LogValidationError(method, endpoint, "500", requestBody, ex.ToString());
+        await logger.LogValidationError(method, endpoint, httpContext.Response.StatusCode.ToString(), requestBody, ex.ToString());
       }
-      // You can log any exception that occurs during the processing of the request
-      // Console.WriteLine($"Exception1: {ex}..");
-      throw;
+
+      var activity = Activity.Current;
+      activity.SetStatus(ActivityStatusCode.Error, ex.ToString());
+      //Console.Error.WriteLine(ex.ToString());
+      // Log the exception with the request body as a custom field
+      Log.Error(ex, "Error processing request: {Method} {Endpoint}, Response Status: {StatusCode} " +"Payload: {@Payload}",
+      method, endpoint, httpContext.Response.StatusCode, new { RequestPayload = requestBody });
     }
     finally
     {

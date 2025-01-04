@@ -6,4 +6,4 @@ DELETE FROM [DotnetDatabase].[dbo].[ErrorLog];
 
 SELECT *
 FROM [DotnetDatabase].[dbo].[ErrorLog]
-WHERE TraceId LIKE '%69d0f69d3e3720a9c19a40fd867eca71%';
+WHERE TraceId LIKE '%c4065e2fccf7c0ff59011c4a253eb7b0%';

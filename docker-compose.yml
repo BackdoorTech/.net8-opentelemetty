@@ -69,17 +69,17 @@ services:
     image: mcr.microsoft.com/mssql/server:2019-latest
     container_name: sqlserver
     ports:
-      - "1433:1433" # Expose SQL Server on default port 1433
+      - "1455:1433" # Expose SQL Server on default port 1433
     environment:
       ACCEPT_EULA: "Y" # Accept Microsoft's End-User License Agreement
-      SA_PASSWORD: "YourStrongPassword123!" # Set a strong password for the SA user
-    volumes:
-      - sql_data:/var/opt/mssql # Persist database files
+      SA_PASSWORD: "MyPass@word" # Set a strong password for the SA user
+    #volumes:
+    #  - sql_data:/var/opt/mssql # Persist database files
 
 
-volumes:
-  sql_data:
-    driver: local # Use local driver for storing database files
+#volumes:
+  #sql_data:
+  #  driver: local # Use local driver for storing database files
 
 networks:
   mongo-network:

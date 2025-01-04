@@ -32,7 +32,7 @@ services:
       - ./docker/prometheus/alert.rules:/etc/prometheus/alert.rules
   collector:
     container_name: Dotnet-collector
-    image: otel/opentelemetry-collector-contrib:latest
+    image: otel/opentelemetry-collector-contrib:0.99.0-amd64
     command: [ "--config=/conf/collector-config.yaml" ]
     volumes:
       - ./docker/collector/collector-config.yaml:/conf/collector-config.yaml

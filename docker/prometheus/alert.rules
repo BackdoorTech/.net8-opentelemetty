@@ -1,0 +1,11 @@
+groups:
+- name: example-alerts
+  rules:
+  - alert: ErrorMetricIncrement
+    expr: increase(your_error_metric[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Error metric increment detected"
+      description: "The error metric has incremented in the last 5 minutes."

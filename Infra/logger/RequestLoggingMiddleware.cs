@@ -105,7 +105,6 @@ public class RequestLoggingMiddleware
       var traceId = Activity.Current?.TraceId.ToString();
       if (!string.IsNullOrEmpty(traceId))
       {
-        Console.WriteLine("TraceId: " + traceId);
         httpContext.Response.Headers.Add("X-TraceId", traceId);
       }
 

@@ -3,21 +3,21 @@ version: '3'
 services:
 
   # redis:
-  #   container_name: idoc-redis
+  #   container_name: Dotnet-redis
   #   image: 'redis:alpine'
   #   volumes:
-  #     - idoc-redis:/data
+  #     - Dotnet-redis:/data
   #   ports:
   #     - 6379:6379
   zipkin-all-in-one:
-    container_name: idoc-zipkin-all-in-one
+    container_name: Dotnet-zipkin-all-in-one
     image: openzipkin/zipkin:latest
     ports:
       - "9411:9411"
     env_file:
       - .env
   prometheus:
-    container_name: idoc-prometheus
+    container_name: Dotnet-prometheus
     image: prom/prometheus:v2.47.0
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -31,8 +31,8 @@ services:
       - ./docker/prometheus/config.yml:/etc/prometheus/prometheus.yml
       - ./docker/prometheus/alert.rules:/etc/prometheus/alert.rules
   collector:
-    container_name: idoc-collector
-    image: otel/opentelemetry-collector-contrib:0.53.0
+    container_name: Dotnet-collector
+    image: otel/opentelemetry-collector-contrib:latest
     command: [ "--config=/conf/collector-config.yaml" ]
     volumes:
       - ./docker/collector/collector-config.yaml:/conf/collector-config.yaml
@@ -45,7 +45,7 @@ services:
 
   loki:
     image: grafana/loki:2.8.0
-    container_name: loki
+    container_name: Dotnet_loki
     ports:
       - "3100:3100" # Loki web UI and API
     volumes:
@@ -55,7 +55,7 @@ services:
   # Optional: If you want a frontend to view the logs like Grafana
   grafana:
     image: grafana/grafana:latest
-    container_name: grafana
+    container_name: Dotnet_grafana
     ports:
       - "3000:3000" # Grafana UI to view logs from Loki
     environment:
@@ -65,14 +65,22 @@ services:
     links:
       - loki
 
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433" # Expose SQL Server on default port 1433
+    environment:
+      ACCEPT_EULA: "Y" # Accept Microsoft's End-User License Agreement
+      SA_PASSWORD: "YourStrongPassword123!" # Set a strong password for the SA user
+    volumes:
+      - sql_data:/var/opt/mssql # Persist database files
+
 
 volumes:
-  idoc-postgres:
-  idoc-redis:
-  mongo-data:
-  mongo-primary-data:
-  mongo-secondary-data:
-  mongo-tertiary-data:
+  sql_data:
+    driver: local # Use local driver for storing database files
+
 networks:
   mongo-network:
     driver: bridge

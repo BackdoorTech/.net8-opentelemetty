@@ -10,8 +10,8 @@ using System.ComponentModel.DataAnnotations;
 public class VideoGameSchema
 {
   // [Required(ErrorMessage = "ID is required")]
-  [Range(1, int.MaxValue, ErrorMessage = "ID must be a positive number")]
-  public int Id { get; set;}
+  //[Range(1, int.MaxValue, ErrorMessage = "ID must be a positive number")]
+  public int ?Id { get; set;}
 
   [Required()]
   [MaxLength(100, ErrorMessage = "Street cannot exceed 100 characters")]

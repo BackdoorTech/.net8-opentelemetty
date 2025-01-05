@@ -65,6 +65,16 @@ public class RequestLoggingMiddleware
             var loggerDb = scope.ServiceProvider.GetRequiredService<DBLoggingService>();
             await loggerDb.LogError(method, endpoint, statusCode, requestBody, responseBody);
           }
+
+          // send to collector
+          Log.Error(
+              "Controller left: Error processing request: {Method} {Endpoint}, Response Status: {StatusCode} Payload: {@Payload}  Response: {@Response}",
+              method,
+              endpoint,
+              httpContext.Response.StatusCode,
+              requestBody,
+              responseBody
+          );
         }
       }
     }

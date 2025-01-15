@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "C6uzdwYClO4=",
+  "dgSpecHash": "vaV9mTyh6oc=",
   "success": true,
   "projectFilePath": "C:\\Users\\peter.maquiran\\Documents\\project\\DoTAPI\\DoTAPI.csproj",
   "expectedPackageFiles": [
@@ -72,6 +72,7 @@
     "C:\\Users\\peter.maquiran\\.nuget\\packages\\opentelemetry.api\\1.10.0\\opentelemetry.api.1.10.0.nupkg.sha512",
     "C:\\Users\\peter.maquiran\\.nuget\\packages\\opentelemetry.api.providerbuilderextensions\\1.10.0\\opentelemetry.api.providerbuilderextensions.1.10.0.nupkg.sha512",
     "C:\\Users\\peter.maquiran\\.nuget\\packages\\opentelemetry.exporter.opentelemetryprotocol\\1.10.0\\opentelemetry.exporter.opentelemetryprotocol.1.10.0.nupkg.sha512",
+    "C:\\Users\\peter.maquiran\\.nuget\\packages\\opentelemetry.exporter.zipkin\\1.10.0\\opentelemetry.exporter.zipkin.1.10.0.nupkg.sha512",
     "C:\\Users\\peter.maquiran\\.nuget\\packages\\opentelemetry.extensions.hosting\\1.10.0\\opentelemetry.extensions.hosting.1.10.0.nupkg.sha512",
     "C:\\Users\\peter.maquiran\\.nuget\\packages\\opentelemetry.instrumentation.aspnetcore\\1.10.1\\opentelemetry.instrumentation.aspnetcore.1.10.1.nupkg.sha512",
     "C:\\Users\\peter.maquiran\\.nuget\\packages\\opentelemetry.instrumentation.sqlclient\\1.10.0-beta.1\\opentelemetry.instrumentation.sqlclient.1.10.0-beta.1.nupkg.sha512",

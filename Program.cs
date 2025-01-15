@@ -50,11 +50,15 @@ builder.Services.AddOpenTelemetry()
             })
             .AddSource("MyApplicationSource") // Your custom sources
             .SetSampler(new AlwaysOnSampler()) // Sampler - always capture for testing
-            .AddOtlpExporter(options =>
+            // .AddOtlpExporter(options =>
+            // {
+            //   //options.Endpoint = new Uri("https://a0138f1d3cfe46c6b660a300bc5100d8.apm.us-central1.gcp.cloud.es.io:443");
+            //   //options.Endpoint = new Uri("http://localhost:4318/v1/traces");
+            //   // options.Headers = "Authorization=Bearer q7aNwoXyMrFXzI8bW8";
+            // })
+            .AddZipkinExporter(options =>
             {
-              //options.Endpoint = new Uri("https://a0138f1d3cfe46c6b660a300bc5100d8.apm.us-central1.gcp.cloud.es.io:443");
-              //options.Endpoint = new Uri("http://localhost:4318/v1/traces");
-              // options.Headers = "Authorization=Bearer q7aNwoXyMrFXzI8bW8";
+              options.Endpoint = new Uri("http://localhost:9411/api/v2/spans"); // Update with your Zipkin server address
             })
 );
 // Add OpenTelemetry metrics

@@ -1398,6 +1398,23 @@
           }
         }
       },
+      "OpenTelemetry.Exporter.Zipkin/1.10.0": {
+        "type": "package",
+        "dependencies": {
+          "OpenTelemetry": "1.10.0",
+          "System.Text.Json": "8.0.5"
+        },
+        "compile": {
+          "lib/net8.0/OpenTelemetry.Exporter.Zipkin.dll": {
+            "related": ".dll-keyless.pem;.dll-keyless.sig;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/OpenTelemetry.Exporter.Zipkin.dll": {
+            "related": ".dll-keyless.pem;.dll-keyless.sig;.xml"
+          }
+        }
+      },
       "OpenTelemetry.Extensions.Hosting/1.10.0": {
         "type": "package",
         "dependencies": {
@@ -5367,6 +5384,37 @@
         "opentelemetry.exporter.opentelemetryprotocol.nuspec"
       ]
     },
+    "OpenTelemetry.Exporter.Zipkin/1.10.0": {
+      "sha512": "BtTEcKAQ/mhsP5uT/49cJctu+ksHf5e3UrSHsTEkPBuEVxexVakXebWLoDsRlQG/AHIgHwtGWFclu4LxQFOcVQ==",
+      "type": "package",
+      "path": "opentelemetry.exporter.zipkin/1.10.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "README.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net462/OpenTelemetry.Exporter.Zipkin.dll",
+        "lib/net462/OpenTelemetry.Exporter.Zipkin.dll-keyless.pem",
+        "lib/net462/OpenTelemetry.Exporter.Zipkin.dll-keyless.sig",
+        "lib/net462/OpenTelemetry.Exporter.Zipkin.xml",
+        "lib/net8.0/OpenTelemetry.Exporter.Zipkin.dll",
+        "lib/net8.0/OpenTelemetry.Exporter.Zipkin.dll-keyless.pem",
+        "lib/net8.0/OpenTelemetry.Exporter.Zipkin.dll-keyless.sig",
+        "lib/net8.0/OpenTelemetry.Exporter.Zipkin.xml",
+        "lib/net9.0/OpenTelemetry.Exporter.Zipkin.dll",
+        "lib/net9.0/OpenTelemetry.Exporter.Zipkin.dll-keyless.pem",
+        "lib/net9.0/OpenTelemetry.Exporter.Zipkin.dll-keyless.sig",
+        "lib/net9.0/OpenTelemetry.Exporter.Zipkin.xml",
+        "lib/netstandard2.0/OpenTelemetry.Exporter.Zipkin.dll",
+        "lib/netstandard2.0/OpenTelemetry.Exporter.Zipkin.dll-keyless.pem",
+        "lib/netstandard2.0/OpenTelemetry.Exporter.Zipkin.dll-keyless.sig",
+        "lib/netstandard2.0/OpenTelemetry.Exporter.Zipkin.xml",
+        "opentelemetry-icon-color.png",
+        "opentelemetry.exporter.zipkin.1.10.0.nupkg.sha512",
+        "opentelemetry.exporter.zipkin.nuspec"
+      ]
+    },
     "OpenTelemetry.Extensions.Hosting/1.10.0": {
       "sha512": "luLe3deRmThvJd8+Oav4ohg+S3DoXnxDx06+GBinAgmVi873C9YPzA0dJlXG1Zeh7uFajzMtLhskaDejQYCFWw==",
       "type": "package",
@@ -8351,6 +8399,7 @@
       "Newtonsoft.Json >= 13.0.3",
       "OpenTelemetry >= 1.10.0",
       "OpenTelemetry.Exporter.OpenTelemetryProtocol >= 1.10.0",
+      "OpenTelemetry.Exporter.Zipkin >= 1.10.0",
       "OpenTelemetry.Extensions.Hosting >= 1.10.0",
       "OpenTelemetry.Instrumentation.AspNetCore >= 1.10.1",
       "OpenTelemetry.Instrumentation.SqlClient >= 1.10.0-beta.1",
@@ -8441,6 +8490,10 @@
             "version": "[1.10.0, )"
           },
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": {
+            "target": "Package",
+            "version": "[1.10.0, )"
+          },
+          "OpenTelemetry.Exporter.Zipkin": {
             "target": "Package",
             "version": "[1.10.0, )"
           },

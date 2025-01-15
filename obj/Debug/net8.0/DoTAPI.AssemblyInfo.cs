@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DoTAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d1a596758c11923f66e3c09551e59f9a1cacbf55")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+44f8ebfa6e15c1e86516e978c4694d35e1277915")]
 [assembly: System.Reflection.AssemblyProductAttribute("DoTAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DoTAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
